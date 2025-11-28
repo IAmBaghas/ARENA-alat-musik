@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="id">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Kuis Tebak Alat Musik Tradisional</title>
+        <style>
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            }
+            
+            body {
+                background-color: #f5f5f5;
+                color: #333;
+                line-height: 1.6;
+            }
+            
+            .parent-container {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                overflow: hidden;
+            }
+
+            #contentToFullscreen {
+                width: 100%;
+                height: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                background-color: #f5f5f5;
+                overflow-y: auto;
+                position: relative;
+            }
+
+            .container {
+                max-width: 1200px;
+                margin: 20px auto;
+                padding: 20px;
+            }
+            
+            .screen {
+                display: none;
+                background-color: white;
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                text-align: center;
+                width: 100%;
+            }
+            
+            .active {
+                display: block;
+            }
+            
+            h1, h2 { color: #2c3e50; }
+            h1 { font-size: 2.5rem; margin-bottom: 20px; }
+            h2 { font-size: 2rem; margin-bottom: 15px; }
+            p { margin-bottom: 20px; font-size: 1.1rem; }
+            
+            button {
+                padding: 12px 30px;
+                font-size: 1.2rem;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background-color 0.3s;
+                background-color: #3498db;
+                color: white;
+                margin: 10px;
+            }
+            
+            button:hover { background-color: #2980b9; }
+
+            .modal-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                backdrop-filter: blur(4px);
+                z-index: 10000;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .modal-overlay.show {
+                display: flex;
+                animation: fadeIn 0.3s;
+            }
+
+            .modal-box {
+                background: white;
+                padding: 30px;
+                border-radius: 15px;
+                width: 90%;
+                max-width: 500px;
+                text-align: center;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+                transform: scale(0.8);
+                transition: transform 0.3s;
+            }
+
+            .modal-overlay.show .modal-box {
+                transform: scale(1);
+            }
+
+            .modal-icon {
+                font-size: 60px;
+                margin-bottom: 10px;
+                display: block;
+            }
+
+            .modal-title {
+                font-size: 24px;
+                font-weight: bold;
+                margin-bottom: 10px;
+                color: #2c3e50;
+            }
+
+            .modal-message {
+                font-size: 18px;
+                margin-bottom: 25px;
+                color: #555;
+            }
+
+            .modal-btn {
+                width: 100%;
+                margin: 0;
+                padding: 15px;
+                background-color: #2c3e50;
+            }
+
+            #notification-container {
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                z-index: 10001;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .toast {
+                background-color: #333;
+                color: white;
+                padding: 12px 25px;
+                border-radius: 50px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                font-size: 16px;
+                opacity: 0;
+                transform: translateY(-20px);
+                animation: slideDown 0.4s forwards;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                min-width: 300px;
+                justify-content: center;
+            }
+
+            .toast.warning { background-color: #f39c12; }
+            .toast.error { background-color: #e74c3c; }
+
+            @keyframes slideDown {
+                to { opacity: 1; transform: translateY(0); }
+            }
+            
+            @keyframes fadeOut {
+                to { opacity: 0; transform: translateY(-20px); }
+            }
+
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+
+            #fullscreenButton {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                background-color: rgba(52, 73, 94, 0.8);
+                color: white;
+                padding: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+                z-index: 9999;
+                transition: all 0.3s ease;
+            }
+            #fullscreenButton:hover { transform: scale(1.1); background-color: rgba(44, 62, 80, 1); }
+            #fullscreenButton svg { width: 24px; height: 24px; fill: white; }
+
+            .input-field, .answer-input {
+                padding: 12px;
+                font-size: 1.2rem;
+                border: 2px solid #3498db;
+                border-radius: 5px;
+                width: 100%;
+            }
+            .input-field { max-width: 300px; margin: 20px 0; }
+            
+            .game-info {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+                background-color: #f8f9fa;
+                padding: 15px;
+                border-radius: 10px;
+            }
+            .score-display { font-size: 1.5rem; font-weight: bold; color: #2c3e50; }
+            
+            .timer-display { 
+                font-size: 1.8rem; 
+                font-weight: bold; 
+                color: #e74c3c; 
+                background: #fff;
+                padding: 5px 15px;
+                border-radius: 5px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+
+            .image-container {
+                position: relative;
+                width: 100%;
+                margin-bottom: 20px;
+                border-radius: 10px;
+                overflow: hidden;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            }
+            
+            .image-puzzle {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                grid-template-rows: repeat(3, 1fr);
+                width: 100%;
+                height: 400px;
+                aspect-ratio: 4 / 3;
+            }
+            
+            .tile {
+                background-color: #34495e;
+                border: 1px solid #2c3e50;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-size: 1.2rem;
+            }
+            .tile:hover { background-color: #4a6b8a; }
+            .tile.revealed, .tile.default { background-color: transparent; border: 1px solid #ddd; }
+            
+            .controls { display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; }
+            .action-buttons { 
+                display: flex; 
+                justify-content: space-between;
+                gap: 15px; 
+                width: 100%;
+            }
+
+            .submit-btn { background-color: #2ecc71; }
+            .submit-btn:hover { background-color: #27ae60; }
+
+            .next-btn { background-color: #95a5a6; }
+            .next-btn:hover { background-color: #7f8c8d; }
+
+            .submit-btn, .next-btn{
+                width: 48%;
+                margin: 0;
+            }
+            
+            .results-container {
+                display: grid;
+                grid-template-columns: repeat(5, 1fr); 
+                gap: 15px;
+                margin-top: 20px;
+                max-height: 60vh;
+                overflow-y: auto;
+                padding: 10px;
+            }
+            .result-item {
+                background-color: #f8f9fa;
+                border: 1px solid #e0e0e0;
+                border-radius: 8px;
+                padding: 15px;
+                text-align: center;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+                font-size: 0.9rem;
+            }
+            .result-item.correct { border-top: 4px solid #2ecc71; background-color: #e8f8f5; }
+            .result-item.wrong { border-top: 4px solid #e74c3c; background-color: #fdedec; }
+            .final-score { font-size: 2rem; font-weight: bold; color: #e74c3c; margin: 20px 0; }
+            .inputNomor { font-size: 20px; width: 64px; }
+
+            @media (max-width: 768px) {
+                .image-puzzle { height: 300px; }
+                .action-buttons { flex-direction: column; }
+                .results-container { grid-template-columns: repeat(2, 1fr); }
+                .modal-box { width: 95%; padding: 20px; }
+                .game-info { flex-direction: column; gap: 10px; } 
+            }
+        </style>
+    </head>
+
+    <body class="parent-container">
+        
+        <div id="contentToFullscreen">
+
+            <div id="notification-container"></div>
+
+            <div id="game-modal" class="modal-overlay">
+                <div class="modal-box">
+                    <div id="modal-icon" class="modal-icon"></div>
+                    <div id="modal-title" class="modal-title">Judul</div>
+                    <div id="modal-message" class="modal-message">Pesan</div>
+                    <button id="modal-next-btn" class="modal-btn">Soal Selanjutnya</button>
+                </div>
+            </div>
+
+            <button id="fullscreenButton" title="Fullscreen">
+                <svg id="icon-maximize" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+                <svg id="icon-minimize" viewBox="0 0 24 24" style="display: none;"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>
+            </button>
+
+            <div class="container">
+
+                <div id="welcome-screen" class="screen active">
+                    <img src="https://i.imgur.com/1MvlgBM.png" alt="Logo_Arena" width="50%" style="margin-bottom: -20px;" />
+                    <h1>Selamat Datang!</h1>
+                    <p>Kuis Tebak Alat Musik Tradisional Indonesia</p>
+                    <p>Waktu Pengerjaan: <strong>3 Menit</strong></p>
+                    <p>Sebelum memulai kuis, isi nomor peserta terlebih dahulu</p>
+
+                    <span class="inputNomor">G-JB-</span>
+                    <select class="inputNomor" id="tipe-peserta">
+                        <option value="PA">PA</option>
+                        <option value="PI">PI</option>
+                    </select>
+                    <span class="inputNomor">-</span>
+                    <input type="text" id="participant-id" class="input-field" placeholder="Contoh: 001" minlength="3">
+
+                    <button id="submit-participant">Mulai Kuis</button>
+                </div>
+                
+                <div id="game-screen" class="screen">
+                    <h2>Tebak Alat Musik Tradisional</h2>
+
+                    <div class="timer-display">
+                        <svg style="width:20px; height:20px; vertical-align:middle; fill:#e74c3c; margin-right:5px;" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.4 0-8-3.6-8-8s3.6-8 8-8 8 3.6 8 8-3.6 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z"/></svg>
+                        <span id="timer">03:00</span>
+                    </div>
+                    
+                    <div class="game-info">
+                        <div class="score-display">Poin: <span id="score">0</span></div>
+                        <div class="participant-id-display">Peserta: <span id="current-participant"></span></div>
+                    </div>
+                    
+                    <div class="image-info">
+                        Soal <span id="current-question">1</span> dari <span id="total-questions">8</span>
+                    </div>
+                    
+                    <div class="image-container">
+                        <div class="image-puzzle" id="image-puzzle"></div>
+                    </div>
+                    
+                    <div class="controls">
+                        <input type="text" class="answer-input" id="answer-input" placeholder="Masukkan nama alat musik...">
+                        <div class="action-buttons">
+                            <button class="submit-btn" id="submit-answer">Submit Jawaban</button>
+
+                            <button class="next-btn" id="skip-question">Lewati Soal</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="results-screen" class="screen">
+                    <h2>Hasil Kuis</h2>
+                    <div id="finish-reason" style="color: #e74c3c; font-weight: bold; margin-bottom: 10px;"></div> 
+                    <div class="final-score">Total Poin: <span id="final-score">0</span></div>
+                    <div class="results-container" id="results-container"></div>
+                    <button id="restart-btn">Main Lagi</button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const musicInstruments = [
+                { name: "Angklung", image: "https://i.imgur.com/sXE4Wpc.png", altNames: ["angklung jawa barat", "musik bambu"] },
+                { name: "Bonang", image: "https://i.imgur.com/xDpkJT1.png", altNames: ["bonang barung", "bonang penerus"] },
+                { name: "Sasando", image: "https://i.imgur.com/jham6a0.png", altNames: ["sasando rote", "sasandu"] },
+                { name: "Gendang", image: "https://i.imgur.com/GpSyzkR.png", altNames: ["kendang", "gendang jawa", "ketipung"] },
+                { name: "Suling", image: "https://i.imgur.com/ypTYcb6.png", altNames: ["seruling", "saluang", "bansi"] },
+                { name: "Tifa", image: "https://i.imgur.com/jF2CZN3.png", altNames: ["tifa papua", "tifa maluku"] },
+                { name: "Rebab", image: "https://i.imgur.com/fVSB0SN.png", altNames: ["rebab jawa", "alat gesek tradisional"] },
+                { name: "Panting", image: "https://i.imgur.com/moucPpa.png", altNames: ["musik panting", "gambus banjar"] },
+                { name: "Kolintang", image: "https://i.imgur.com/GrbakKg.png", altNames: ["kulintang", "kolintang minahasa"] },
+                { name: "Saron", image: "https://i.imgur.com/fJhKiZv.png", altNames: ["saron demung", "ricik"] },
+                { name: "Gong", image: "https://i.imgur.com/ahuenti.png", altNames: ["gong ageng", "kempul"] },
+                { name: "Kecapi", image: "https://i.imgur.com/0FqJE4G.png", altNames: ["kacapi", "kecapi sunda"] },
+                { name: "Rebana", image: "https://i.imgur.com/31D9REC.png", altNames: ["terbang", "genjring"] },
+                { name: "Hasapi", image: "https://i.imgur.com/T4r6typ.png", altNames: ["kacapi batak", "hasapi batak", "hapetan"] },
+                { name: "Kesokkesok", image: "https://i.imgur.com/scMP0mn.png", altNames: ["keso-keso", "kesok-kesok", "sinrili", "keso"] },
+                { name: "Dol", image: "https://i.imgur.com/TFPMOog.png", altNames: ["keso-keso", "bedug"] },
+                { name: "Fu", image: "https://i.imgur.com/oZEzpNJ.png", altNames: ["fuu", "tahuri", "korno"] },
+                { name: "Gambus", image: "https://i.imgur.com/yfaFz60.png", altNames: ["Gambusu", "Dambus", "Gambus Selodang"] },
+                { name: "Aramba", image: "https://i.imgur.com/5kcq3cX.png", altNames: ["Arumba"] },
+                { name: "Ceng-Ceng", image: "https://i.imgur.com/v4MkfFU.png", altNames: ["Ceng Ceng", "Cengceng", "Ceng-Ceng Kecrak", "Cengceng Kecrak", "Ceng Ceng Kecrak", "Ceng-Ceng Ricik", "Ceng Ceng Ricik", "Cengceng Ricik"] },
+            ];
+
+            const COLS = 4;
+            const ROWS = 3;
+
+            let currentParticipantId = "";
+            let currentInstrumentIndex = 0;
+            let score = 0;
+            let tilesRevealed = 0;
+            let gameResults = [];
+            let currentTilesRevealed = 0;
+            let timerInterval;
+            let timeRemaining = 180; 
+
+            // Elements
+            const welcomeScreen = document.getElementById('welcome-screen');
+            const gameScreen = document.getElementById('game-screen');
+            const resultsScreen = document.getElementById('results-screen');
+            const submitParticipantBtn = document.getElementById('submit-participant');
+            const participantIdInput = document.getElementById('participant-id');
+            const currentParticipantSpan = document.getElementById('current-participant');
+            const scoreSpan = document.getElementById('score');
+            const imagePuzzle = document.getElementById('image-puzzle');
+            const answerInput = document.getElementById('answer-input');
+            const submitAnswerBtn = document.getElementById('submit-answer');
+            const finalScoreSpan = document.getElementById('final-score');
+            const resultsContainer = document.getElementById('results-container');
+            const restartBtn = document.getElementById('restart-btn');
+            const currentQuestionSpan = document.getElementById('current-question');
+            const totalQuestionsSpan = document.getElementById('total-questions');
+            const skipBtn = document.getElementById('skip-question');
+            const timerSpan = document.getElementById('timer');
+            const finishReasonDiv = document.getElementById('finish-reason');
+            
+            // Modal
+            const modalOverlay = document.getElementById('game-modal');
+            const modalIcon = document.getElementById('modal-icon');
+            const modalTitle = document.getElementById('modal-title');
+            const modalMessage = document.getElementById('modal-message');
+            const modalNextBtn = document.getElementById('modal-next-btn');
+
+            function showNotification(message, type = 'warning') {
+                const container = document.getElementById('notification-container');
+                const toast = document.createElement('div');
+                
+                let icon = '⚠️';
+                if (type === 'error') icon = '❌';
+                if (type === 'success') icon = '✅';
+
+                toast.className = `toast ${type}`;
+                toast.innerHTML = `<span>${icon}</span> ${message}`;
+                
+                container.appendChild(toast);
+
+                setTimeout(() => {
+                    toast.style.animation = 'fadeOut 0.4s forwards';
+                    setTimeout(() => {
+                        toast.remove();
+                    }, 400);
+                }, 3000);
+            }
+
+            function showModal(isCorrect, points, correctName) {
+                if(timeRemaining <= 0 && gameScreen.style.display !== 'block') return;
+
+                modalOverlay.classList.add('show');
+                
+                if (isCorrect) {
+                    modalTitle.textContent = 'Jawaban Benar!';
+                    modalTitle.style.color = '#2ecc71';
+                    modalMessage.innerHTML = `Hebat! Anda mendapatkan <b>${points} poin</b>.`;
+                    modalNextBtn.style.backgroundColor = '#2ecc71';
+                } else {
+                    modalTitle.textContent = 'Jawaban Salah';
+                    modalTitle.style.color = '#e74c3c';
+                    modalMessage.innerHTML = `Sayang sekali. Jawaban yang benar adalah: <br><b>${correctName}</b>`;
+                    modalNextBtn.style.backgroundColor = '#e74c3c';
+                }
+
+                modalNextBtn.onclick = function() {
+                    modalOverlay.classList.remove('show');
+                    nextQuestion();
+                };
+                
+                modalNextBtn.focus();
+            }
+
+            function initGame() {
+                totalQuestionsSpan.textContent = musicInstruments.length;
+                
+                submitParticipantBtn.addEventListener('click', startGame);
+                submitAnswerBtn.addEventListener('click', submitAnswer);
+                skipBtn.addEventListener('click', skipQuestion);
+                restartBtn.addEventListener('click', restartGame);
+                
+                answerInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') submitAnswer();
+                });
+                
+                preloadImages();
+            }
+
+            function skipQuestion() {
+                const instrument = musicInstruments[currentInstrumentIndex];
+                
+                gameResults.push({
+                    instrument: instrument.name,
+                    answer: "(Dilewati)", 
+                    correct: false, 
+                    tilesRevealed: currentTilesRevealed,
+                    points: 0
+                });
+
+                showModal(false, 0, instrument.name);
+            }
+
+            function preloadImages() {
+                const placeholderSVG = 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><rect fill="#e9ecef" width="100%" height="100%"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#6c757d" font-size="28">Gambar tidak tersedia</text></svg>');
+                musicInstruments.forEach(inst => {
+                    const img = new Image();
+                    img.onerror = () => { inst.image = placeholderSVG; };
+                    img.src = inst.image;
+                });
+            }
+
+            function startTimer() {
+                timeRemaining = 180; 
+                updateTimerDisplay();
+                
+                if(timerInterval) clearInterval(timerInterval);
+
+                timerInterval = setInterval(() => {
+                    timeRemaining--;
+                    updateTimerDisplay();
+
+                    if (timeRemaining <= 0) {
+                        clearInterval(timerInterval);
+                        showNotification("Waktu Habis!", "error");
+                        modalOverlay.classList.remove('show');
+                        endGame("Waktu Habis!");
+                    }
+                }, 1000);
+            }
+
+            function updateTimerDisplay() {
+                const minutes = Math.floor(timeRemaining / 60);
+                const seconds = timeRemaining % 60;
+                timerSpan.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (timeRemaining <= 30) {
+                    timerSpan.parentElement.style.backgroundColor = '#fdedec';
+                    timerSpan.parentElement.style.border = '1px solid red';
+                } else {
+                    timerSpan.parentElement.style.backgroundColor = '#fff';
+                    timerSpan.parentElement.style.border = 'none';
+                }
+            }
+
+            function startGame() {
+                const inputElement = document.getElementById('participant-id');
+                const selectElement = document.getElementById('tipe-peserta');
+                const idNumber = inputElement.value.trim();
+                const participantType = selectElement.value;
+
+                if (!idNumber) {
+                    showNotification("Nomor peserta tidak boleh kosong!", "error");
+                    return;
+                }
+                if (idNumber.length < 3) {
+                    showNotification("Nomor peserta minimal 3 karakter!", "warning");
+                    return;
+                }
+                
+                currentParticipantId = `G-JB-${participantType}-${idNumber}`;
+                currentParticipantSpan.textContent = currentParticipantId;
+
+                welcomeScreen.classList.remove('active');
+                gameScreen.classList.add('active');
+                
+                score = 0;
+                currentInstrumentIndex = 0;
+                gameResults = [];
+                
+                showQuestion();
+                startTimer(); 
+            }
+
+            function showQuestion() {
+                if (currentInstrumentIndex >= musicInstruments.length) {
+                    endGame("Permainan Selesai");
+                    return;
+                }
+                
+                const instrument = musicInstruments[currentInstrumentIndex];
+                currentQuestionSpan.textContent = currentInstrumentIndex + 1;
+                createPuzzleTiles(instrument.image);
+                answerInput.value = '';
+                answerInput.focus();
+                currentTilesRevealed = 0;
+                updateScoreDisplay();
+            }
+
+            function createPuzzleTiles(imageUrl) {
+                imagePuzzle.innerHTML = '';
+                for (let i = 0; i < 11; i++) {
+                    const tile = document.createElement('div');
+                    tile.className = 'tile';
+                    tile.dataset.index = i;
+                    
+                    if (i === 10) {
+                        tile.classList.add('default');
+                        applyImageToTile(tile, i, imageUrl);
+                    } else {
+                        tile.textContent = i + 1;
+                        tile.addEventListener('click', () => revealTile(tile, imageUrl));
+                    }
+                    imagePuzzle.appendChild(tile);
+                }
+            }
+
+            function applyImageToTile(tile, index, imageUrl) {
+                tile.style.backgroundImage = `url(${imageUrl})`;
+                tile.style.backgroundSize = `${COLS * 100}% ${ROWS * 100}%`;
+                const col = index % COLS;
+                const row = Math.floor(index / COLS);
+                if (COLS > 1 && ROWS > 1) {
+                    const posX = (col / (COLS - 1)) * 100; 
+                    const posY = (row / (ROWS - 1)) * 100; 
+                    tile.style.backgroundPosition = `${posX}% ${posY}%`;
+                } else {
+                    tile.style.backgroundPosition = `0% 0%`;
+                }
+            }
+
+            function revealTile(tile, imageUrl) {
+                const index = parseInt(tile.dataset.index);
+                if (!tile.classList.contains('revealed') && !tile.classList.contains('default')) {
+                    tile.classList.add('revealed');
+                    applyImageToTile(tile, index, imageUrl);
+                    tile.textContent = '';
+                    currentTilesRevealed++;
+                    updateScoreDisplay();
+                }
+            }
+
+            function submitAnswer() {
+                const answer = answerInput.value.trim().toLowerCase();
+                const instrument = musicInstruments[currentInstrumentIndex];
+                const correctAnswer = instrument.name.toLowerCase();
+                
+                if (!answer) {
+                    showNotification("Silakan isi jawaban terlebih dahulu!", "warning");
+                    return;
+                }
+                
+                let isCorrect = false;
+
+                if (answer === correctAnswer) isCorrect = true;
+                if (!isCorrect && instrument.altNames) {
+                    isCorrect = instrument.altNames.some(alt => alt.toLowerCase() === answer);
+                }
+                
+                if (!isCorrect && answer.length > 2) {
+                    const similarity = calculateSimilarity(answer, correctAnswer);
+                    if (similarity > 0.70) isCorrect = true;
+                    if (!isCorrect && instrument.altNames) {
+                        isCorrect = instrument.altNames.some(alt => calculateSimilarity(answer, alt.toLowerCase()) > 0.70);
+                    }
+                }
+                
+                const points = Math.max(0, 10 - currentTilesRevealed);
+                
+                gameResults.push({
+                    instrument: instrument.name,
+                    answer: answerInput.value,
+                    correct: isCorrect, 
+                    tilesRevealed: currentTilesRevealed,
+                    points: isCorrect ? points : 0
+                });
+                
+                if (isCorrect) score += points;
+
+                showModal(isCorrect, points, instrument.name);
+            }
+
+            function calculateSimilarity(str1, str2) {
+                const longer = str1.length > str2.length ? str1 : str2;
+                const shorter = str1.length > str2.length ? str2 : str1;
+                if (longer.length === 0) return 1.0;
+                return (longer.length - editDistance(longer, shorter)) / parseFloat(longer.length);
+            }
+
+            function editDistance(str1, str2) {
+                const costs = [];
+                for (let i = 0; i <= str1.length; i++) {
+                    let lastValue = i;
+                    for (let j = 0; j <= str2.length; j++) {
+                        if (i === 0) costs[j] = j;
+                        else if (j > 0) {
+                            let newValue = costs[j - 1];
+                            if (str1.charAt(i - 1) !== str2.charAt(j - 1)) {
+                                newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
+                            }
+                            costs[j - 1] = lastValue;
+                            lastValue = newValue;
+                        }
+                    }
+                    if (i > 0) costs[str2.length] = lastValue;
+                }
+                return costs[str2.length];
+            }
+
+            function nextQuestion() {
+                currentInstrumentIndex++;
+                showQuestion();
+            }
+
+            function updateScoreDisplay() {
+                scoreSpan.textContent = score;
+            }
+
+            function endGame(reason = "") {
+                clearInterval(timerInterval);
+
+                gameScreen.classList.remove('active');
+                resultsScreen.classList.add('active');
+                
+                finalScoreSpan.textContent = score;
+                finishReasonDiv.textContent = reason; 
+
+                displayResults();
+                saveResultsToFile();
+            }
+
+            function displayResults() {
+                resultsContainer.innerHTML = '';
+                gameResults.forEach((result, index) => {
+                    const resultItem = document.createElement('div');
+                    const statusClass = result.correct ? 'correct' : 'wrong';
+
+                    resultItem.className = `result-item ${statusClass}`;
+                    resultItem.innerHTML = `
+                        <h3>Soal ${index + 1}</h3>
+                        <div style="font-weight:bold; margin-bottom:5px;">${result.instrument}</div>
+                        <div style="font-size: 0.85rem; color: #666;">Jawab: ${result.answer}</div>
+                        <div style="font-size: 0.85rem; margin-top:5px;">Poin: <b>${result.points}</b></div>
+                    `;
+                    resultsContainer.appendChild(resultItem);
+                });
+            }
+
+            function saveResultsToFile() {
+                let resultData = `Hasil Kuis Tebak Alat Musik Tradisional\n============================================\n`;
+                resultData += `Nomor Peserta: ${currentParticipantId}\nTotal Poin: ${score}\n`;
+                resultData += `Tanggal: ${new Date().toLocaleDateString('id-ID')}\n`;
+                
+                // --- PENAMBAHAN SISA WAKTU DI SINI ---
+                const sisaMenit = Math.floor(timeRemaining / 60);
+                const sisaDetik = timeRemaining % 60;
+                resultData += `Sisa Waktu: ${sisaMenit} menit ${sisaDetik} detik\n\nDetail Jawaban:\n----------------\n`;
+                
+                gameResults.forEach((res, i) => {
+                    resultData += `${i + 1}. Alat Musik: ${res.instrument}\n   Jawaban: ${res.answer} (${res.correct ? 'BENAR' : 'SALAH'})\n   Kepingan dibuka: ${res.tilesRevealed}\n   Poin: ${res.points}\n\n`;
+                });
+                const blob = new Blob([resultData], { type: 'text/plain;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `hasil_kuis_${currentParticipantId}.txt`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+
+            function restartGame() {
+                resultsScreen.classList.remove('active');
+                welcomeScreen.classList.add('active');
+            }
+
+            window.onload = initGame;
+            document.addEventListener("contextmenu", e => e.preventDefault(), false);
+            
+            document.addEventListener('DOMContentLoaded', () => {
+                const fsBtn = document.getElementById('fullscreenButton');
+                const content = document.getElementById('contentToFullscreen');
+                const iconMax = document.getElementById('icon-maximize');
+                const iconMin = document.getElementById('icon-minimize');
+
+                function toggleFs() {
+                    if (!document.fullscreenElement) {
+                        if (content.requestFullscreen) content.requestFullscreen();
+                        else if (content.webkitRequestFullscreen) content.webkitRequestFullscreen();
+                        else if (content.msRequestFullscreen) content.msRequestFullscreen();
+                    } else {
+                        if (document.exitFullscreen) document.exitFullscreen();
+                        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+                        else if (document.msExitFullscreen) document.msExitFullscreen();
+                    }
+                }
+                function updateIcon() {
+                    if (document.fullscreenElement) {
+                        iconMax.style.display = 'none'; iconMin.style.display = 'block'; fsBtn.title = "Keluar Fullscreen";
+                    } else {
+                        iconMax.style.display = 'block'; iconMin.style.display = 'none'; fsBtn.title = "Masuk Fullscreen";
+                    }
+                }
+                fsBtn.addEventListener('click', toggleFs);
+                ['fullscreenchange','webkitfullscreenchange','mozfullscreenchange','MSFullscreenChange'].forEach(e => document.addEventListener(e, updateIcon));
+            });
+        </script>
+    </body>
+</html>
