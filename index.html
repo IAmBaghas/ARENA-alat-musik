@@ -398,26 +398,106 @@
 
         <script>
             const musicInstruments = [
-                { name: "Angklung", image: "https://i.imgur.com/sXE4Wpc.png", altNames: ["angklung jawa barat", "musik bambu"] },
-                { name: "Bonang", image: "https://i.imgur.com/xDpkJT1.png", altNames: ["bonang barung", "bonang penerus"] },
-                { name: "Sasando", image: "https://i.imgur.com/jham6a0.png", altNames: ["sasando rote", "sasandu"] },
-                { name: "Gendang", image: "https://i.imgur.com/GpSyzkR.png", altNames: ["kendang", "gendang jawa", "ketipung"] },
-                { name: "Suling", image: "https://i.imgur.com/ypTYcb6.png", altNames: ["seruling", "saluang", "bansi"] },
-                { name: "Tifa", image: "https://i.imgur.com/jF2CZN3.png", altNames: ["tifa papua", "tifa maluku"] },
-                { name: "Rebab", image: "https://i.imgur.com/fVSB0SN.png", altNames: ["rebab jawa", "alat gesek tradisional"] },
-                { name: "Panting", image: "https://i.imgur.com/moucPpa.png", altNames: ["musik panting", "gambus banjar"] },
-                { name: "Kolintang", image: "https://i.imgur.com/GrbakKg.png", altNames: ["kulintang", "kolintang minahasa"] },
-                { name: "Saron", image: "https://i.imgur.com/fJhKiZv.png", altNames: ["saron demung", "ricik"] },
-                { name: "Gong", image: "https://i.imgur.com/ahuenti.png", altNames: ["gong ageng", "kempul"] },
-                { name: "Kecapi", image: "https://i.imgur.com/0FqJE4G.png", altNames: ["kacapi", "kecapi sunda"] },
-                { name: "Rebana", image: "https://i.imgur.com/31D9REC.png", altNames: ["terbang", "genjring"] },
-                { name: "Hasapi", image: "https://i.imgur.com/T4r6typ.png", altNames: ["kacapi batak", "hasapi batak", "hapetan"] },
-                { name: "Kesokeso", image: "https://i.imgur.com/scMP0mn.png", altNames: ["keso-keso", "kesok-kesok", "sinrili", "keso", "kesokkesok"] },
-                { name: "Dol", image: "https://i.imgur.com/TFPMOog.png", altNames: ["keso-keso", "bedug"] },
-                { name: "Fu", image: "https://i.imgur.com/oZEzpNJ.png", altNames: ["fuu", "tahuri", "korno"] },
-                { name: "Gambus", image: "https://i.imgur.com/yfaFz60.png", altNames: ["Gambusu", "Dambus", "Gambus Selodang"] },
-                { name: "Aramba", image: "https://i.imgur.com/5kcq3cX.png", altNames: ["Arumba"] },
-                { name: "Ceng-Ceng", image: "https://i.imgur.com/v4MkfFU.png", altNames: ["Ceng Ceng", "Cengceng", "Ceng-Ceng Kecrak", "Cengceng Kecrak", "Ceng Ceng Kecrak", "Ceng-Ceng Ricik", "Ceng Ceng Ricik", "Cengceng Ricik"] },
+                { 
+                    name: "Dol", 
+                    image: "https://i.imgur.com/TFPMOog.png", 
+                    altNames: [ "bedug"] 
+                },
+                { 
+                    name: "Serangko", 
+                    image: "https://tse2.mm.bing.net/th/id/OIP.P9omxzwiH9qRTW9SNu73rQHaEK?rs=1&pid=ImgDetMain&o=7&rm=3", 
+                    altNames: [ "Serangko" ] 
+                }, 
+                { 
+                    name: "Jengglong", 
+                    image: "https://c1.staticflickr.com/7/6190/6088395126_61a2b6eb45_b.jpg", 
+                    altNames: [ "Jengglong" ] 
+                }, 
+                { 
+                    name: "Guoto", 
+                    image: "https://pesonapapua.com/wp-content/uploads/2025/03/alat-musik-guoto-papua-barat.webp", 
+                    altNames: [ "Guoto" ] 
+                }, 
+                { 
+                    name: "Kesokeso", 
+                    image: "https://i.imgur.com/scMP0mn.png", 
+                    altNames: [ "keso-keso", "kesok-kesok", "sinrili", "keso", "kesokkesok" ] 
+                }, 
+                { 
+                    name: "Fu", 
+                    image: "https://i.imgur.com/oZEzpNJ.png", 
+                    altNames: ["fuu", "tahuri", "korno"] 
+                },
+                { 
+                    name: "ladolado", 
+                    image: "https://i0.wp.com/visit.kalteng.go.id/wp-content/uploads/Gamang.jpg?resize=384%2C220&ssl=1", 
+                    altNames: [ "ladolado" ] 
+                }, 
+                { 
+                    name: "Garantung", 
+                    image: "https://tobaria.com/wp-content/uploads/2024/12/Y9YMmvxwLGMVIRinxYySh0K1lFyQ4Hzf1CBwHePF.jpg", 
+                    altNames: [ "Gaarantung" ] 
+                }, 
+                { 
+                    name: "Siter", 
+                    image: "https://cdn1-production-images-kly.akamaized.net/43CfvKHdK4qIm2C6xlV4uIKYs6w=/500x281/smart/filters:quality(75):strip_icc()/kly-media-production/medias/2876070/original/048349600_1565229824-alat_musik_jawa_tengah_3.jpg", 
+                    altNames: [ "Siter" ] 
+                }, 
+                { 
+                    name: "Serunai", 
+                    image: "https://cdn.rri.co.id/berita/Bengkulu/o/1740061757221-Serunai-Bengkulu-Copy/0delg7txdj23siz.jpeg", 
+                    altNames: [ "Serunai" ] 
+                }, 
+                { 
+                    name: "Saluang", 
+                    image: "https://pariwisataindonesia.id/wp-content/uploads/3030/09/saluang-Foto-Headlines.jpg", 
+                    altNames: [ "Saluang" ] 
+                }, 
+                { 
+                    name: "Gambus", 
+                    image: "https://i.imgur.com/yfaFz60.png", 
+                    altNames: ["Gambusu", "Dambus", "Gambus Selodang"] 
+                },
+                { 
+                    name: "Aramba", 
+                    image: "https://i.imgur.com/5kcq3cX.png", 
+                    altNames: ["Arumba"] 
+                },
+                { 
+                    name: "Demung", 
+                    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4HWg2J5r3_E2XLonJzvvA2IVBRbK8HjGzOQ&s", 
+                    altNames: [ "Demung" ] 
+                }, 
+                { 
+                    name: "Tambo", 
+                    image: "https://cdn.rri.co.id/berita/Banda_Aceh/o/1725211341256-admin_tambo/uze5a9scaij2u56.jpeg", 
+                    altNames: [ "Tambo" ] 
+                }, 
+                { 
+                    name: "Celempong", 
+                    image: "https://images.hive.blog/0x0/https://lh4.googleusercontent.com/proxy/Ia6GN0qInHbqDD-jf0Bq03X-G_EZ5d3_2ZHavH5n8FzFFldAYczuluYPigIAaermS9lnOMQyZqQccjVfMeXjaw=s0-d", 
+                    altNames: [ "Celempong" ] 
+                }, 
+                { 
+                    name: "Ceng-Ceng", 
+                    image: "https://i.imgur.com/v4MkfFU.png", 
+                    altNames: ["Ceng Ceng", "Cengceng", "Ceng-Ceng Kecrak", "Cengceng Kecrak", "Ceng Ceng Kecrak", "Ceng-Ceng Ricik", "Ceng Ceng Ricik", "Cengceng Ricik"] 
+                }, 
+                { 
+                    name: "Tehyan", 
+                    image: "https://images.genpi.co/resize/1280x860-100/uploads/news/normal/2019/02/11/122d8af16ff1a8f5cb5347bb8f3367bd.webp", 
+                    altNames: [ "Tehyan" ] 
+                }, 
+                { 
+                    name: "Palopalo", 
+                    image: "https://travellingindonesia.com/wp-content/uploads/2022/11/images-7-e1669085843779.jpeg", 
+                    altNames: [ "Palo-palo", "palo palo"] 
+                }, 
+                { 
+                    name: "Sape", 
+                    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/COLLECTIE_TROPENMUSEUM_Langhalsluit_met_twee_snaren_TMnr_1384-1.jpg/640px-COLLECTIE_TROPENMUSEUM_Langhalsluit_met_twee_snaren_TMnr_1384-1.jpg", 
+                    altNames: [ "sape" ] 
+                }, 
             ];
 
             const COLS = 4;
@@ -462,10 +542,6 @@
             function showNotification(message, type = 'warning') {
                 const container = document.getElementById('notification-container');
                 const toast = document.createElement('div');
-                
-                let icon = '⚠️';
-                if (type === 'error') icon = '❌';
-                if (type === 'success') icon = '✅';
 
                 toast.className = `toast ${type}`;
                 toast.innerHTML = `<span>${icon}</span> ${message}`;
@@ -622,7 +698,7 @@
 
             function createPuzzleTiles(imageUrl) {
                 imagePuzzle.innerHTML = '';
-                for (let i = 0; i < 11; i++) {
+                for (let i = 0; i < 9; i++) {
                     const tile = document.createElement('div');
                     tile.className = 'tile';
                     tile.dataset.index = i;
@@ -832,4 +908,5 @@
     </body>
 
 </html>
+
 
