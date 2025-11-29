@@ -698,12 +698,12 @@
 
             function createPuzzleTiles(imageUrl) {
                 imagePuzzle.innerHTML = '';
-                for (let i = 0; i < 9; i++) {
+                for (let i = 0; i < 11; i++) {
                     const tile = document.createElement('div');
                     tile.className = 'tile';
                     tile.dataset.index = i;
                     
-                    if (i === 10) {
+                    if (i === 8) {
                         tile.classList.add('default');
                         applyImageToTile(tile, i, imageUrl);
                     } else {
@@ -908,5 +908,6 @@
     </body>
 
 </html>
+
 
 
